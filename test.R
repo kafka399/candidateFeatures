@@ -1,7 +1,7 @@
-setwd('d://temp//polsci/')
+setwd('d://temp//datadiveLT')
 
-Y2008=read.csv('rinkimai/kandidatasDaugiamandate2008_kandidatasitem.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE)
-d2008=read.csv('rinkimai/kandidatoDeklaracija2008_kandidatodeklaracija.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE)
+Y2008=read.csv('kandidatasDaugiamandate2008_kandidatasitem.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE)
+d2008=read.csv('kandidatoDeklaracija2008_kandidatodeklaracija.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE)
 
 Y2008$kandidatas=gsub('\\s+',' ',tolower(Y2008$kandidatas))
 d2008$kandidatas=gsub('\\s+',' ',tolower(d2008$kandidatas))
@@ -12,7 +12,7 @@ turtas=data.frame(k=as.character(d2008$kandidatas),turtas=(d2008$turtas+d2008$su
 index=sapply(Y2008$kandidatas,function(x){  y=which(x==turtas$k);if(length(y)>0)as.integer(y[1])})
 Y2008= data.frame(Y2008,turtas=turtas[index,2])
 
-Y2004=read.csv('rinkimai/nariai1.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE,sep=';')
+Y2004=read.csv('nariai2004.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE,sep=';')
 
 Y2004=sapply(Y2004,function(x){
   gsub('^ *','',tolower((gsub('\\*\\*\\*','',gsub('\\n','',gsub('\\"','',(x)))))))
@@ -21,7 +21,7 @@ Y2004=sapply(Y2004,function(x){
 Y2008=data.frame(Y2008,buves=sapply(Y2008$kandidatas,function(x){  any(x==Y2004)}   ))
              
              
-Y2008_nariai=read.csv('rinkimai/nariai2008.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE,sep=';')
+Y2008_nariai=read.csv('nariai2008.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE,sep=';')
 Y2008_nariai=sapply(Y2008_nariai,function(x){
   gsub('^ *','',tolower((gsub('\\*\\*\\*','',gsub('\\n','',gsub('\\"','',(x)))))))
 })
@@ -60,7 +60,16 @@ train=data.frame(metai=Y2008$gimimo_data,seimynine_padetis=Y2008$seimynine_padet
 
 require(randomForest)
 
-test=train[501:775,]
-train=train[1:500,]
+#test=train[501:775,]
+#train=train[1:500,]
 forest=randomForest(narys~.,train,ntree=100)
 varImpPlot(forest)
+
+require('ggplot2')
+rez=data.frame(names=(rownames((forest$importance))),values=as.numeric(forest$importance))
+levels(rez$names)=c('Buvęs Seimo narys','Išsilavinimas','Amžius','Neatlikta bausmė','Pripažintas kaltu','Šeimyninė padėtis','Sunkus nusikaltimas','Tautybė','Turtas','Užsienio kalbos')
+rez=rez[order(rez$values),]
+rez=data.frame(order=order(rez$values),names=rez$names,values=rez$values)
+
+#rez=rez[order(rez$values),]
+ggplot(rez,aes(values,paste(order-1,'. ',names,sep='')))+geom_point()+ylab('Savybės')+xlab('Reikšmės')
