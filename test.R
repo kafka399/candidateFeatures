@@ -21,9 +21,10 @@ Y2004=sapply(Y2004,function(x){
 Y2008=data.frame(Y2008,buves=sapply(Y2008$kandidatas,function(x){  any(x==Y2004)}   ))
              
              
-Y2008_nariai=read.csv('nariai2008.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE,sep=';')
+Y2008_nariai=read.csv('nariai2008.csv',fileEncoding ='UTF8',stringsAsFactors=FALSE,sep=',')
+Y2008_nariai=Y2008_nariai[which(Y2008_nariai$Daugiamandate!='Daugiamandate '),1]
 Y2008_nariai=sapply(Y2008_nariai,function(x){
-  gsub('^ *','',tolower((gsub('\\*\\*\\*','',gsub('\\n','',gsub('\\"','',(x)))))))
+  gsub('\\s$','',gsub('^ *','',tolower((gsub('\\*\\*\\*','',gsub('\\n','',gsub('\\"','',(x))))))))
 })
 
 
