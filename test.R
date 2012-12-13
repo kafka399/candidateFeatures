@@ -178,3 +178,9 @@ test=data.frame(metai=Y2012$gimimo_data,seimynine_padetis=Y2012$seimynine_padeti
                  buves=Y2012$buves,turtas=Y2012$turtas,narys=Y2012$narys
                  #,sunkus_nusikaltimas=Y2012$sunkus_nusikaltimas,pripazintas_kaltu=Y2012$pripazintas_kaltu,neatlikta_bausme=Y2012$neatlikta_bausme
 )
+
+x=(as.numeric(test$narys))-rez[,2]
+sqrt(sum(x^2)/length(x))
+
+a=ifelse(rez[,2]>.75,1,0)
+sum(ifelse(as.logical(a)!=as.logical(test$narys),1,0))/nrow(test)
